@@ -16,8 +16,6 @@ carpark_availability = None
 carpark_cache = None
 
 # Functions
-
-
 def main_menu() -> int:
     """Displays the main menu and returns the choice the user gave
 
