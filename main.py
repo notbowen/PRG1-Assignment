@@ -5,7 +5,7 @@
 # In charge of getting the user input to switch between basic and advanced mode
 # Before running the respective scripts
 
-from utils.input_validation import validate_str
+from utils.input import validate_str
 from basic import main as basic_main
 
 title = """
