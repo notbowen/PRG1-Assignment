@@ -67,7 +67,7 @@ def option_2() -> None:
         addr = basement["Address"]
 
         # Print out info
-        print("{:10} {:15} {}".format(num, cp_type, addr))
+        print("{:10} {:20} {}".format(num, cp_type, addr))
 
     # Display total number of basement CPs
     print("Total number: {}".format(len(basements)))
