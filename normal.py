@@ -3,7 +3,7 @@
 # Last Modified: 2 Aug 2023
 #
 # basic.py
-# Implementation of the basic requirements in
+# Implementation of the basic & advanced requirements in
 # Assignment of PRG1, 2023
 
 # Imports
@@ -33,10 +33,14 @@ MENU
 [5]  Display Carparks Without Available Lots
 [6]  Display Carparks With At Least x% Available Lots
 [7]  Display Addresses of Carparks With At Least x% Available Lots 
+[8]  Display All Carparks at Given Location
+[9]  Display Carpark with the Most Parking Lots
+[10] Create an Output File with Sorted Carpark Availability with Addresses
 [0]  Exit"""
 
     print(display_str)
-    choice = validate_input_num("Enter your option: ", list(range(1, 8)) + [0])
+    choice = validate_input_num(
+        "Enter your option: ", list(range(1, 11)) + [0])
     return choice
 
 
@@ -188,6 +192,42 @@ def option_7() -> None:
 
     # Display total length
     print("Total number: {}".format(len(cps_available)))
+
+
+def option_8() -> None:
+    """Function to display all carparks at a given location"""
+    print("Option 8: Display All Carparks at Given Location")
+
+    # Get location input from user
+    location = input("Please enter the location to search for: ")
+    location = location.upper()
+
+    # Get all carpark data
+    carparks = get_all_carpark_info()
+
+    # Filter carpark data by address
+    carparks_at_location = [cp for cp in carparks if location in cp["Address"]]
+
+    # Display location not found if no carparks are found
+    if len(carparks_at_location) == 0:
+        print("No carparks found at location: {}".format(location))
+        return
+
+    # Format and display all carparks at location
+    print("{:10} {:10} {:14} {:10}   {}".format("Carpark No",
+          "Total Lots", "Lots Available", "Percentage", "Address"))
+    for cp in carparks_at_location:
+        num = cp["Carpark Number"]
+        total = cp["Total Lots"]
+        available = cp["Lots Available"]
+        percentage = cp["Percentage"]
+        address = cp["Address"]
+
+        print("{:10} {:>10} {:>14} {:10.1f}   {}".format(
+            num, total, available, percentage, address))
+
+    # Display length
+    print("Total number: {}".format(len(carparks_at_location)))
 
 
 def main() -> None:
