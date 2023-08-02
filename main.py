@@ -3,12 +3,11 @@
 # Last Modified: 2 Aug 2023
 #
 # main.py
-# In charge of getting the user input to switch between basic and advanced mode
+# In charge of getting the user input to switch between normal and additional mode
 # Before running the respective scripts
 
 from utils.input import validate_input_str
-from basic import main as basic_main
-from advanced import main as advanced_main
+from normal import main as normal_main
 
 title = """
   _____  _____   _____   __                    _                                  _   
@@ -26,14 +25,15 @@ def main():
     print("=============================================")
     print("Hi, welcome to my PRG1 Assignment.")
     print("Please choose between basic or advanced mode,")
-    print("by typing B(asic) or A(dvanced), to choose basic or advanced respectively.")
+    print("by typing N(normal) or A(dditional), to choose basic or advanced respectively.")
 
-    choice = validate_input_str("> ", "B", "A", ignore_case=True)
+    choice = validate_input_str("> ", "N", "A", ignore_case=True)
 
-    if choice.upper() == "B":
-        basic_main()
+    if choice.upper() == "N":
+        normal_main()
     else:
-        advanced_main()
+        # TODO: Impleme
+        pass
 
 if __name__ == "__main__":
     main()

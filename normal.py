@@ -14,8 +14,6 @@ from utils.carpark import get_all_carpark_info, load_all_carpark_info
 # Global variables
 ran_opt_3 = False
 
-# Functions
-
 
 def main_menu() -> int:
     """Displays the main menu and returns the choice the user gave
