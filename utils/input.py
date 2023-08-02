@@ -45,15 +45,57 @@ def validate_input_str(
     while True:
         user_input = input(prompt)
 
-        if validate_str(user_input, *values_to_accept, ignore_case=ignore_case):
+        if _validate_str(user_input, *values_to_accept, ignore_case=ignore_case):
             break
 
         print(invalid_prompt)
 
     return user_input
 
+def validate_input_num(
+        prompt: str,
+        values_to_accept: List[int | float] | range | str,
+        invalid_prompt: str = INVALID_PROMPT
+) -> int | float:
+    """Validates user input based on the value.
 
-def validate_str(
+    Examples:
+        ```py
+        # Accepts any integer
+        validate_num("Enter an int: ", "int")
+
+        # Accepts any integer/float between 0 and 4 (inclusive)
+        validate_num("Enter a value between 0 and 4: ", range(5))
+        ```
+
+    Args:
+        prompt (str): The prompt to prompt the user
+
+        values_to_accept (List[int  |  float] | range | str): Values to accept. Can be a
+        list of floats or integers, range, or "int" or "float"
+
+        invalid_prompt (str, optional): The prompt to show the user when their input is
+        invalid. Defaults to "Invalid input! Please enter again.".
+
+    Returns:
+        int | float: The valid integer or float
+    """
+
+    # Keep looping till the user inputs a valid value
+    while True:
+        user_input = input(prompt)
+        if _validate_num(user_input, values_to_accept):
+            break
+        print(invalid_prompt)
+
+    # Convert to requested data type and return
+    try:
+        return int(user_input)
+    except ValueError:
+        return float(user_input)
+
+
+def _validate_str(
     user_input: str,
     *values_to_accept: str,
     ignore_case: bool = False,
@@ -86,61 +128,44 @@ def validate_str(
     return False
 
 
-def validate_num(
-        prompt: str,
-        values_to_accept: List[int | float] | range | str,
-        invalid_prompt: str = INVALID_PROMPT
-) -> int | float:
+def _validate_num(
+        user_input: str,
+        values_to_accept: List[int | float] | range | str
+) -> bool:
     """Validates user input based on the value.
 
-    Examples:
-        ```py
-        # Accepts any integer
-        validate_num("Enter an int: ", "int")
-
-        # Accepts any integer/float between 0 and 4 (inclusive)
-        validate_num("Enter a value between 0 and 4: ", range(5))
-        ```
-
     Args:
-        prompt (str): The prompt to prompt the user
+        user_input (str): The string to validate
 
         values_to_accept (List[int  |  float] | range | str): Values to accept. Can be a
         list of floats or integers, range, or "int" or "float"
 
-        invalid_prompt (str, optional): The prompt to show the user when their input is
-        invalid. Defaults to "Invalid input! Please enter again.".
-
     Returns:
-        int | float: The valid integer or float
+        bool: Whether the input is valid or not
     """
 
-    while True:
-        user_input = input(prompt)
+    # Integer validation (handles for negative inputs)
+    if user_input.lstrip('-').isdigit():
+        user_input = int(user_input)
+        if values_to_accept == "int":
+            return True
 
-        # Integer validation (handles for negative inputs)
-        if user_input.lstrip('-').isdigit():
-            user_input = int(user_input)
-            if values_to_accept == "int":
-                return user_input
+    # Float validation (handles for negative inputs)
+    elif user_input.lstrip('-').replace('.', '', 1).isdigit():
+        user_input = float(user_input)
+        if values_to_accept == "float":
+            return True 
 
-        # Float validation (handles for negative inputs)
-        elif user_input.lstrip('-').replace('.', '', 1).isdigit():
-            user_input = float(user_input)
-            if values_to_accept == "float":
-                return user_input
+    else:
+        return False
 
-        else:
-            print(invalid_prompt)
-            continue
+    # Check if user input is in valid range
+    if user_input in values_to_accept:
+        return True
 
-        # Check if user input is in valid range
-        if user_input in values_to_accept:
-            return user_input
+    # Check if float is within the specified range
+    if type(values_to_accept) == range:
+        if values_to_accept.start <= user_input <= (values_to_accept.stop - 1):
+            return True
 
-        # Check if float is within the specified range
-        if type(values_to_accept) == range:
-            if values_to_accept.start <= user_input <= (values_to_accept.stop - 1):
-                return user_input
-
-        print(invalid_prompt)
+    return False

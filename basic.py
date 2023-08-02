@@ -6,7 +6,7 @@
 # Assignment of PRG1, 2023
 
 # Imports
-from utils.input import validate_num, validate_str
+from utils.input import validate_input_str, validate_input_num
 from utils.files import load_file, parse_carpark_information
 from utils.carpark import get_cp_percentage, cache_cp_address
 
@@ -37,7 +37,7 @@ MENU
 [0]  Exit"""
 
     print(display_str)
-    choice = validate_num("Enter your option: ", list(range(1, 8)) + [0])
+    choice = validate_input_num("Enter your option: ", list(range(1, 8)) + [0])
     return choice
 
 
@@ -80,7 +80,7 @@ def option_3() -> None:
     # Prints out option header
     print("Option 3: Read Carpark Availability Data File")
 
-    filename = validate_str(
+    filename = validate_input_str(
         "Enter the file name: ",
         "carpark-availability-v1.csv",
         "carpark-availability-v2.csv"
@@ -133,7 +133,7 @@ def option_6() -> None:
     print("Option 6: Display Carparks With At Least x% Available Lots")
 
     # Get percentage required
-    percentage = validate_num("Enter the percentage required: ", range(0, 101))
+    percentage = validate_input_num("Enter the percentage required: ", range(0, 101))
 
     # Get carparks that are above or equal to that percentage
     cps_available = [
@@ -161,7 +161,7 @@ def option_7() -> None:
     print("Option 7: Display Addresses of Carparks With At Least x% Available Lots")
 
     # Get percentage required
-    percentage = validate_num("Enter the percentage required: ", range(0, 101))
+    percentage = validate_input_num("Enter the percentage required: ", range(0, 101))
 
     # Get carparks that are above or equal to that percentage
     cps_available = [
