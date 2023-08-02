@@ -100,6 +100,10 @@ def validate_num(
             user_input = float(user_input)
             if values_to_accept == "float":
                 return user_input
+        
+        else:
+            print(invalid_prompt)
+            continue
 
         # Check if user input is in valid range
         if user_input in values_to_accept:
