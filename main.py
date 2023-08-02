@@ -1,5 +1,6 @@
 # Name: Hu Bowen (S10255800B)
 # Date: 1 Aug 2023
+# Last Modified: 2 Aug 2023
 #
 # main.py
 # In charge of getting the user input to switch between basic and advanced mode
@@ -7,6 +8,7 @@
 
 from utils.input import validate_input_str
 from basic import main as basic_main
+from advanced import main as advanced_main
 
 title = """
   _____  _____   _____   __                    _                                  _   
@@ -31,8 +33,7 @@ def main():
     if choice.upper() == "B":
         basic_main()
     else:
-        # TODO: Implement advanced main function
-        pass
+        advanced_main()
 
 if __name__ == "__main__":
     main()
