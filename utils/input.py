@@ -105,4 +105,9 @@ def validate_num(
         if user_input in values_to_accept:
             return user_input
 
+        # Check if float is within the specified range
+        if type(values_to_accept) == range:
+            if values_to_accept.start <= user_input <= (values_to_accept.stop - 1):
+                return user_input
+
         print(invalid_prompt)
