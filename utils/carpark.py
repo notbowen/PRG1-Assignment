@@ -1,3 +1,9 @@
+# Name: Hu Bowen (S10255800B)
+# Date: 1 Aug 2023
+# 
+# carpark.py
+# In charge of reading and parsing formatted carpark data
+
 from typing import Dict, List
 
 
