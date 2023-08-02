@@ -11,6 +11,7 @@ from utils.files import load_file
 # Global variables for caching
 carpark_info = None
 all_carpark_info = None
+timestamp = None
 
 
 def get_carpark_information() -> List[Dict[str, str]]:
@@ -53,7 +54,7 @@ def get_all_carpark_info() -> List[Dict[str, str]]:
     return all_carpark_info
 
 
-def load_all_carpark_info(filename: str) -> (str, List[Dict[str, str]]):
+def load_all_carpark_info(filename: str) -> List[Dict[str, str]]:
     """Function to load all carpark information based on filename,
     without caching
 
@@ -61,12 +62,11 @@ def load_all_carpark_info(filename: str) -> (str, List[Dict[str, str]]):
         filename (str): The filename to load carpark availability from
 
     Returns:
-        (str, List[Dict[str, str]]): Header and all carpark information
-        formatted accordingly
+        List[Dict[str, str]]: All carpark information formatted accordingly
     """
 
     # Make all_carpark_info global to overwrite
-    global all_carpark_info
+    global all_carpark_info, timestamp
 
     # Load carpark info into a structure of:
     # {carpark_name: [list_of_carpark_info]}
@@ -80,7 +80,7 @@ def load_all_carpark_info(filename: str) -> (str, List[Dict[str, str]]):
 
     # Load available carparks, and remove timestamp
     available_cps = load_file(filename)
-    header = available_cps.pop(0)
+    timestamp = available_cps.pop(0)
     available_cps = parse_carpark_information(available_cps)
 
     # Map all the available carparks into the loaded cp_info,
@@ -109,7 +109,7 @@ def load_all_carpark_info(filename: str) -> (str, List[Dict[str, str]]):
         cp["Percentage"] = percentage
 
     all_carpark_info = available_cps
-    return header, all_carpark_info
+    return all_carpark_info
 
 
 def parse_carpark_information(data: List[str]) -> List[Dict[str, str]]:
@@ -137,3 +137,17 @@ def parse_carpark_information(data: List[str]) -> List[Dict[str, str]]:
 
     # Return the list of dicts
     return carpark_information
+
+
+def get_timestamp() -> str:
+    """Function to return the timestamp read from the .csv file
+    WARNING: Run load_all_carpark_info() before running this
+
+    Returns:
+        str: The timestamp
+    """
+
+    if timestamp is None:
+        raise TypeError("Expected timestamp to have a value, got None.")
+
+    return timestamp

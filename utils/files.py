@@ -30,3 +30,20 @@ def load_file(filename: str) -> List[str] | None:
         data = f.read()
 
     return data.splitlines()
+
+def write_file(filename: str, content: str) -> None:
+    """Function to write data into a specified filename in the ./res folder
+
+    Args:
+        filename (str): Name of the file to write to
+        content (str): Content to write to the file
+    """
+
+    # Get absolute path to the file
+    # WARN: Program must be started in directory containing main.py
+    res_path = os.path.join(os.getcwd(), RESOURCE_PATH)
+    file_path = os.path.join(res_path, filename)
+
+    # Write content to the file
+    with open(file_path, "w") as f:
+        f.write(content)

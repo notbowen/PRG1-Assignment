@@ -9,7 +9,8 @@
 # Imports
 from utils.input import validate_input_str, validate_input_num
 from utils.carpark import get_carpark_information
-from utils.carpark import get_all_carpark_info, load_all_carpark_info
+from utils.carpark import get_all_carpark_info, load_all_carpark_info, get_timestamp
+from utils.files import write_file
 
 # Global variables
 ran_opt_3 = False
@@ -93,7 +94,8 @@ def option_3() -> None:
     )
 
     # Get timestamp from loading the carpark information
-    timestamp, _ = load_all_carpark_info(filename)
+    load_all_carpark_info(filename)
+    timestamp = get_timestamp()
 
     # Prints out header
     print(timestamp)
@@ -254,6 +256,44 @@ def option_9() -> None:
 
     print("{:10} {:>10} {:>14} {:10.1f}   {}".format(
         num, total, available, percentage, address))
+
+
+def option_10() -> None:
+    """Function to create output file with sorted carpark info"""
+    # Get all carparks
+    carparks = get_all_carpark_info()
+
+    # Sort by available lots
+    # Line taken from: https://stackoverflow.com/questions/72899/how-to-sort-a-list-of-dictionaries-by-a-value-of-the-dictionary-in-python
+    sorted_carpark = sorted(carparks, key=lambda cp: int(cp["Lots Available"]))
+
+    # Get timestamp
+    timestamp = get_timestamp()
+
+    # Loop through sorted carparks and write to file
+    content = ""
+
+    # Write timestamp and headers
+    content += timestamp + '\n'
+    content += "Carpark Number,Total Lots,Lots Available,Address\n"
+
+    # Write the sorted data to the csv file
+    for cp in sorted_carpark:
+        data = [cp["Carpark Number"], cp["Total Lots"],
+                cp["Lots Available"], cp["Address"]]
+        content += ",".join(data)
+        content += '\n'
+
+    # Apply changes to the csv file
+    write_file("carpark-availability-with-addresses.csv", content)
+
+    # Display number of lines written
+    lines = len(sorted_carpark) + 2
+    print("Lines written: {}".format(lines))
+
+    # Display filename
+    print("Wrote to file: ./res/carpark-availability-with-addresses.csv")
+
 
 def main() -> None:
     # Load carpark information
