@@ -1,9 +1,16 @@
+# Author: Hu Bowen (S10255800B)
+# Date: 1 Aug 2023
+# Last Modified: 2 Aug 2023
+#
+# input.py
+# In charge of validating user inputs
+
 from typing import List
 
 INVALID_PROMPT = "Invalid input! Please enter again!"
 
 
-def validate_str(
+def validate_input_str(
     prompt: str,
     *values_to_accept: str,
     ignore_case: bool = False,
@@ -18,10 +25,10 @@ def validate_str(
     Examples:
         ```py
         # Only valid if the user inputs `A` or `B`, not `a` or `b`
-        validate_str("Input A or B: ", "A", "B", True)
+        validate_input_str("Input A or B: ", "A", "B", True)
 
         # Valid if user inputs a, b, A or B
-        validate_str("Input A or B: ", "A", "B")
+        validate_input_str("Input A or B: ", "A", "B")
         ```
 
     Args:
@@ -34,27 +41,49 @@ def validate_str(
         str: A valid string that is one of the values of `values_to_accept`
     """
 
+    # Keep looping till the user's input is valid
+    while True:
+        user_input = input(prompt)
+
+        if validate_str(user_input, *values_to_accept, ignore_case=ignore_case):
+            break
+
+        print(invalid_prompt)
+
+    return user_input
+
+
+def validate_str(
+    user_input: str,
+    *values_to_accept: str,
+    ignore_case: bool = False,
+) -> bool:
+    """Function to validate a given string input,
+    and returns a boolean regarding if the conditions are met
+
+    Args:
+        user_input (str): The user's input
+        values_to_accept (str): The values to be accepted, seperated by commas
+        ignore_case (bool): Toggles the case sensitivity of the validation
+
+    Returns:
+        bool: A boolean stating whether the conditions are met
+    """
+
     # Makes list lowercase if ignore_case is set
     if ignore_case:
         values_to_accept = [x.lower() for x in values_to_accept]
 
-    while True:
-        # Get input from user
-        user_input = input(prompt)
+    # Lower the input if we want to ignore case, to match the list
+    if ignore_case:
+        user_input = user_input.lower()
 
-        # Lower the input if we want to ignore case, to match the list
-        if ignore_case:
-            user_input = user_input.lower()
+    # Check if user input is valid
+    if user_input in values_to_accept:
+        return True
 
-        # Check if user input is valid
-        if user_input in values_to_accept:
-            break
-
-        # Alert user that their input is invalid
-        print(invalid_prompt)
-
-    # Data is valid, return
-    return user_input
+    # User input is not accepted
+    return False
 
 
 def validate_num(
@@ -100,7 +129,7 @@ def validate_num(
             user_input = float(user_input)
             if values_to_accept == "float":
                 return user_input
-        
+
         else:
             print(invalid_prompt)
             continue

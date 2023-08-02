@@ -5,7 +5,7 @@
 # In charge of getting the user input to switch between basic and advanced mode
 # Before running the respective scripts
 
-from utils.input import validate_str
+from utils.input import validate_input_str
 from basic import main as basic_main
 
 title = """
@@ -26,7 +26,7 @@ def main():
     print("Please choose between basic or advanced mode,")
     print("by typing B(asic) or A(dvanced), to choose basic or advanced respectively.")
 
-    choice = validate_str("> ", "B", "A", ignore_case=True)
+    choice = validate_input_str("> ", "B", "A", ignore_case=True)
 
     if choice.upper() == "B":
         basic_main()
