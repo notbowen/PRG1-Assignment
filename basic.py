@@ -7,15 +7,15 @@
 
 # Imports
 from utils.input import validate_input_str, validate_input_num
-from utils.files import load_file, parse_carpark_information
-from utils.carpark import get_cp_percentage, cache_cp_address
+from utils.carpark import get_carpark_information
+from utils.carpark import get_all_carpark_info, load_all_carpark_info
 
-# Initialise global variables
-carpark_info = None
-carpark_availability = None
-carpark_cache = None
+# Global variables
+ran_opt_3 = False
 
 # Functions
+
+
 def main_menu() -> int:
     """Displays the main menu and returns the choice the user gave
 
@@ -43,6 +43,7 @@ MENU
 
 def option_1() -> None:
     """Function to display total number of carparks in carpark_info"""
+    carpark_info = get_carpark_information()
     total_cps = len(carpark_info)
 
     print("Option 1: Display Total Number of Carparks in 'carpark-information.csv'")
@@ -55,6 +56,7 @@ def option_2() -> None:
     print("Option 2: Display All Basement Carparks in 'carpark-information.csv'")
 
     # Get basement carparks
+    carpark_info = get_carpark_information()
     basements = [cp for cp in carpark_info
                  if cp["Carpark Type"] == "BASEMENT CAR PARK"]
 
@@ -75,27 +77,26 @@ def option_2() -> None:
 
 def option_3() -> None:
     """Reads the user-specified file and loads the data to carpark_availability"""
-    global carpark_availability, carpark_cache
+    global ran_opt_3
 
     # Prints out option header
     print("Option 3: Read Carpark Availability Data File")
 
+    # Get filename from user
     filename = validate_input_str(
         "Enter the file name: ",
         "carpark-availability-v1.csv",
         "carpark-availability-v2.csv"
     )
 
-    carpark_availability = load_file(filename)
-    timestamp = carpark_availability.pop(0)
-    carpark_availability = parse_carpark_information(carpark_availability)
-
-    # Calculate and cache the carpark availability and addresses
-    carpark_cache = get_cp_percentage(carpark_availability)
-    cache_cp_address(carpark_info, carpark_cache)
+    # Get timestamp from loading the carpark information
+    timestamp, _ = load_all_carpark_info(filename)
 
     # Prints out header
     print(timestamp)
+
+    # Toggle option 3 ran
+    ran_opt_3 = True
 
 
 def option_4() -> None:
@@ -104,6 +105,7 @@ def option_4() -> None:
     print("Option 4: Print Total Number of Carparks in the File Read in [3]")
 
     # Get total number
+    carpark_availability = get_all_carpark_info()
     total = len(carpark_availability)
 
     # Display total number
@@ -116,6 +118,7 @@ def option_5() -> None:
     print("Option 5: Display Carparks without Available Lots")
 
     # Get carparks without lots
+    carpark_availability = get_all_carpark_info()
     empty_cps = [
         cp for cp in carpark_availability if cp["Lots Available"] == '0']
 
@@ -133,14 +136,16 @@ def option_6() -> None:
     print("Option 6: Display Carparks With At Least x% Available Lots")
 
     # Get percentage required
-    percentage = validate_input_num("Enter the percentage required: ", range(0, 101))
+    percentage = validate_input_num(
+        "Enter the percentage required: ", range(0, 101))
 
     # Get carparks that are above or equal to that percentage
+    carpark_availability = get_all_carpark_info()
     cps_available = [
-        cp for cp in carpark_cache if cp["Percentage"] >= percentage]
+        cp for cp in carpark_availability if cp["Percentage"] >= percentage]
 
     # Loop through and display
-    print("{:10} {:10} {:10} {:10}".format("Carpark No",
+    print("{:10} {:10} {:14} {:10}".format("Carpark No",
           "Total Lots", "Lots Available", "Percentage"))
     for cp in cps_available:
         num = cp["Carpark Number"]
@@ -148,7 +153,7 @@ def option_6() -> None:
         available = cp["Lots Available"]
         percentage = cp["Percentage"]
 
-        print("{:10} {:>10} {:>10} {:10.1f}".format(
+        print("{:10} {:>10} {:>14} {:10.1f}".format(
             num, total, available, percentage))
 
     # Display total length
@@ -161,11 +166,13 @@ def option_7() -> None:
     print("Option 7: Display Addresses of Carparks With At Least x% Available Lots")
 
     # Get percentage required
-    percentage = validate_input_num("Enter the percentage required: ", range(0, 101))
+    percentage = validate_input_num(
+        "Enter the percentage required: ", range(0, 101))
 
     # Get carparks that are above or equal to that percentage
+    carpark_availability = get_all_carpark_info()
     cps_available = [
-        cp for cp in carpark_cache if cp["Percentage"] >= percentage]
+        cp for cp in carpark_availability if cp["Percentage"] >= percentage]
 
     # Loop through and display
     print("{:10} {:10} {:14} {:10}   {}".format("Carpark No",
@@ -186,9 +193,7 @@ def option_7() -> None:
 
 def main() -> None:
     # Load carpark information
-    global carpark_info
-    carpark_info = load_file("carpark-information.csv")
-    carpark_info = parse_carpark_information(carpark_info)
+    get_carpark_information()
 
     # Mainloop
     while True:
@@ -200,7 +205,7 @@ def main() -> None:
             break
 
         # Check if option 3 has been ran for options 4..=7
-        if option > 3 and carpark_availability is None:
+        if option > 3 and not ran_opt_3:
             print("Please run option 3 first!")
             continue
 
