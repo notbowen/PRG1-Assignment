@@ -1,61 +1,138 @@
 # Name: Hu Bowen (S10255800B)
 # Date: 1 Aug 2023
-# 
+#
 # carpark.py
-# In charge of reading and parsing formatted carpark data
+# In charge of giving properly formatted carpark information
 
 from typing import Dict, List
+from utils.files import load_file
+
+# Global variables for caching
+carpark_info = None
+all_carpark_info = None
 
 
-def get_cp_percentage(carpark_data: List[Dict[str, str]]) -> List[Dict[str, str]]:
-    """Caches the carpark availability percentage into a specified cache variable
-
-    Args:
-        carpark_data (Dict[str, str]): The carpark data formatted as a list of dicts
+def get_carpark_information() -> List[Dict[str, str]]:
+    """Loads and caches the carpark information
 
     Returns:
-        List[Dict[str, str]]: A list of dicts containing the percentage data
+        List[Dict[str, str]]: List of carpark information formatted accordingly
     """
+    global carpark_info
 
-    # Initialise variable to return
-    cps = []
+    # Check if carpark info has been cached, and cache it if it hasn't
+    if carpark_info is not None:
+        return carpark_info
 
-    # Loop through data and append to cps
-    for cp in carpark_data:
-        try:
-            cp["Percentage"] = int(cp["Lots Available"]) / \
-                int(cp["Total Lots"])
-        except ZeroDivisionError:
-            cp["Percentage"] = 0.0
+    carpark_info = load_file("carpark-information.csv")
+    carpark_info = parse_carpark_information(carpark_info)
 
-        # Convert percentage from 0.9 to 90%
-        cp["Percentage"] *= 100
-        cps.append(cp)
-
-    return cps
+    # Return carpark information
+    return carpark_info
 
 
-def cache_cp_address(
-        carpark_info: List[Dict[str, str]],
-        carpark_cache: List[Dict[str, str]]
-    ) -> None:
-    """Function to associate the carpark info with carpark availability
-    by carpark number and write to a cache variable
+def get_all_carpark_info() -> List[Dict[str, str]]:
+    """Function to get all the carpark information,
+    including availability and information.
+    Caches the data for performance improvement.
+
+    WARNING: This function will fail when called before calling load_all_carpark_info
 
     Args:
-        carpark_info (List[Dict[str, str]]): Carpark information (with address)
-        carpark_cache (List[Dict[str, str]]): Cached data to write to
+        filename (str): The filename to load carpark availability from
+
+    Returns:
+        List[Dict[str, str]]: All carpark information formatted accordingly
     """
 
-    # Increase performance by getting a key value pair of
-    # carpark number and corresponding addresses
-    cp_address = {}
-    for cp in carpark_info:
-        cp_address[cp["Carpark Number"]] = cp["Address"]
+    # Check if all cp info has been cached, if not crash the program
+    if all_carpark_info is None:
+        raise TypeError("Expected all_carpark_info to have a value, not None.")
 
-    # Loop through carpark availability and find corresponding address
-    for cp in carpark_cache:
+    return all_carpark_info
+
+
+def load_all_carpark_info(filename: str) -> (str, List[Dict[str, str]]):
+    """Function to load all carpark information based on filename,
+    without caching
+
+    Args:
+        filename (str): The filename to load carpark availability from
+
+    Returns:
+        (str, List[Dict[str, str]]): Header and all carpark information
+        formatted accordingly
+    """
+
+    # Make all_carpark_info global to overwrite
+    global all_carpark_info
+
+    # Load carpark info into a structure of:
+    # {carpark_name: [list_of_carpark_info]}
+    cp_info = {}
+    for cp in carpark_info:
+        cp_info[cp["Carpark Number"]] = [
+            cp["Carpark Type"],
+            cp["Type of Parking System"],
+            cp["Address"]
+        ]
+
+    # Load available carparks, and remove timestamp
+    available_cps = load_file(filename)
+    header = available_cps.pop(0)
+    available_cps = parse_carpark_information(available_cps)
+
+    # Map all the available carparks into the loaded cp_info,
+    # Leaves some values blank if no associated carpark is found
+    for cp in available_cps:
+        # Map type & address
         try:
-            cp["Address"] = cp_address[cp["Carpark Number"]]
-        except KeyError:  # Leave empty addresses blank
+            cp_data = cp_info[cp["Carpark Number"]]
+            cp["Carpark Type"] = cp_data[0]
+            cp["Type of Parking System"] = cp_data[1]
+            cp["Address"] = cp_data[2]
+        except KeyError:
+            cp["Carpark Type"] = ""
+            cp["Type of Parking System"] = ""
             cp["Address"] = ""
+
+        # Map percentage
+        available_lots = int(cp["Lots Available"])
+        total_lots = int(cp["Total Lots"])
+
+        if total_lots != 0:
+            percentage = (available_lots / total_lots) * 100
+        else:
+            percentage = 0.0
+
+        cp["Percentage"] = percentage
+
+    all_carpark_info = available_cps
+    return header, all_carpark_info
+
+
+def parse_carpark_information(data: List[str]) -> List[Dict[str, str]]:
+    """Function to parse carpark information, parses into a list of
+    dictionaries with the key as the header, and the value as the 
+    respective values
+
+    Args:
+        data (List[str]): Carpark information in a list of strings
+
+    Returns:
+        List[Dict[str, str]]: List of dictionaries containing the parsed information
+    """
+    # Initialise return variable
+    carpark_information = []
+
+    # Get CSV headers
+    headers = data.pop(0)
+
+    # Loop through data, format and append
+    for info in data:
+        carpark_dict = {k: v for k, v in zip(
+            headers.split(','), info.split(','))}
+        carpark_information.append(carpark_dict)
+
+    # Return the list of dicts
+    return carpark_information
