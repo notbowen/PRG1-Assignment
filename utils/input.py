@@ -25,7 +25,7 @@ def validate_input_str(
     Examples:
         ```py
         # Only valid if the user inputs `A` or `B`, not `a` or `b`
-        validate_input_str("Input A or B: ", "A", "B", True)
+        validate_input_str("Input A or B: ", "A", "B", ignore_case=True)
 
         # Valid if user inputs a, b, A or B
         validate_input_str("Input A or B: ", "A", "B")
