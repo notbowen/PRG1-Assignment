@@ -168,7 +168,7 @@ def option_7() -> None:
         cp for cp in carpark_cache if cp["Percentage"] >= percentage]
 
     # Loop through and display
-    print("{:10} {:10} {:10} {:10} {}".format("Carpark No",
+    print("{:10} {:10} {:14} {:10}   {}".format("Carpark No",
           "Total Lots", "Lots Available", "Percentage", "Address"))
     for cp in cps_available:
         num = cp["Carpark Number"]
@@ -177,7 +177,7 @@ def option_7() -> None:
         percentage = cp["Percentage"]
         address = cp["Address"]
 
-        print("{:10} {:>10} {:>10} {:10.1f} {}".format(
+        print("{:10} {:>10} {:>14} {:10.1f}   {}".format(
             num, total, available, percentage, address))
 
     # Display total length
