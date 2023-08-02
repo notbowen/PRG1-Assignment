@@ -95,8 +95,8 @@ def validate_num(
             if values_to_accept == "int":
                 return user_input
 
-        # Float validation
-        elif user_input.replace('.', '', 1).isdigit():
+        # Float validation (handles for negative inputs)
+        elif user_input.lstrip('-').replace('.', '', 1).isdigit():
             user_input = float(user_input)
             if values_to_accept == "float":
                 return user_input
