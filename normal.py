@@ -230,6 +230,31 @@ def option_8() -> None:
     print("Total number: {}".format(len(carparks_at_location)))
 
 
+def option_9() -> None:
+    """Function to display carparks with the most parking lots"""
+
+    # Get all carparks
+    carparks = get_all_carpark_info()
+
+    # Get the highest carpark
+    highest_cp = carparks[0]
+    for cp in carparks:
+        if cp["Total Lots"] > highest_cp["Total Lots"]:
+            highest_cp = cp
+
+    # Display the carpark information
+    print("{:10} {:10} {:14} {:10}   {}".format("Carpark No",
+          "Total Lots", "Lots Available", "Percentage", "Address"))
+
+    num = highest_cp["Carpark Number"]
+    total = highest_cp["Total Lots"]
+    available = highest_cp["Lots Available"]
+    percentage = highest_cp["Percentage"]
+    address = highest_cp["Address"]
+
+    print("{:10} {:>10} {:>14} {:10.1f}   {}".format(
+        num, total, available, percentage, address))
+
 def main() -> None:
     # Load carpark information
     get_carpark_information()
