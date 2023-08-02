@@ -89,8 +89,8 @@ def validate_num(
     while True:
         user_input = input(prompt)
 
-        # Integer validation
-        if user_input.isdigit():
+        # Integer validation (handles for negative inputs)
+        if user_input.lstrip('-').isdigit():
             user_input = int(user_input)
             if values_to_accept == "int":
                 return user_input
