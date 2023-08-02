@@ -24,7 +24,7 @@ def main():
     print("=============================================")
     print("Hi, welcome to my PRG1 Assignment.")
     print("Please choose between basic or advanced mode,")
-    print("by typing B or A, to choose basic or advanced respectively.")
+    print("by typing B(asic) or A(dvanced), to choose basic or advanced respectively.")
 
     choice = validate_str("> ", "B", "A", ignore_case=True)
 
