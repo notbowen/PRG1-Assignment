@@ -54,7 +54,7 @@ def get_all_carpark_info() -> List[Dict[str, str]]:
     return all_carpark_info
 
 
-def load_all_carpark_info(filename: str) -> List[Dict[str, str]]:
+def associate_carpark_info(available_cps: List[str]) -> List[Dict[str, str]]:
     """Function to load all carpark information based on filename,
     without caching
 
@@ -79,7 +79,6 @@ def load_all_carpark_info(filename: str) -> List[Dict[str, str]]:
         ]
 
     # Load available carparks, and remove timestamp
-    available_cps = load_file(filename)
     timestamp = available_cps.pop(0)
     available_cps = parse_carpark_information(available_cps)
 

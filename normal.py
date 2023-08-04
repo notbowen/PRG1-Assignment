@@ -9,8 +9,8 @@
 # Imports
 from utils.input import validate_input_str, validate_input_num
 from utils.carpark import get_carpark_information
-from utils.carpark import get_all_carpark_info, load_all_carpark_info, get_timestamp
-from utils.files import write_file
+from utils.carpark import get_all_carpark_info, associate_carpark_info, get_timestamp
+from utils.files import load_file, write_file
 
 # Global variables
 ran_opt_3 = False
@@ -93,8 +93,11 @@ def option_3() -> None:
         "carpark-availability-v2.csv"
     )
 
-    # Get timestamp from loading the carpark information
-    load_all_carpark_info(filename)
+    # Get the carpark availability
+    cp_info = load_file(filename)
+
+    # Associate the carpark information & availability and get timestamp
+    associate_carpark_info(cp_info)
     timestamp = get_timestamp()
 
     # Prints out header
