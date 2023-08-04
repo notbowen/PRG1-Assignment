@@ -5,6 +5,9 @@
 # carpark.py
 # In charge of giving properly formatted carpark information
 
+import requests
+import dotenv
+
 from typing import Dict, List
 from utils.files import load_file
 
@@ -54,19 +57,19 @@ def get_all_carpark_info() -> List[Dict[str, str]]:
     return all_carpark_info
 
 
-def associate_carpark_info(available_cps: List[str]) -> List[Dict[str, str]]:
+def associate_carpark_info(available_cps: List[Dict[str, str]]) -> List[Dict[str, str]]:
     """Function to load all carpark information based on filename,
     without caching
 
     Args:
-        filename (str): The filename to load carpark availability from
+        available_cps (List[Dict[str, str]]): The carpark data formatted accordingly
 
     Returns:
         List[Dict[str, str]]: All carpark information formatted accordingly
     """
 
     # Make all_carpark_info global to overwrite
-    global all_carpark_info, timestamp
+    global all_carpark_info
 
     # Load carpark info into a structure of:
     # {carpark_name: [list_of_carpark_info]}
@@ -77,10 +80,6 @@ def associate_carpark_info(available_cps: List[str]) -> List[Dict[str, str]]:
             cp["Type of Parking System"],
             cp["Address"]
         ]
-
-    # Load available carparks, and remove timestamp
-    timestamp = available_cps.pop(0)
-    available_cps = parse_carpark_information(available_cps)
 
     # Map all the available carparks into the loaded cp_info,
     # Leaves some values blank if no associated carpark is found
@@ -138,6 +137,16 @@ def parse_carpark_information(data: List[str]) -> List[Dict[str, str]]:
     return carpark_information
 
 
+def set_timestamp(tstamp: str) -> None:
+    """Function to set the timestamp
+
+    Args:
+        tstamp (str): The value of the timestamp
+    """
+    global timestamp
+    timestamp = tstamp
+
+
 def get_timestamp() -> str:
     """Function to return the timestamp read from the .csv file
     WARNING: Run load_all_carpark_info() before running this
@@ -150,3 +159,11 @@ def get_timestamp() -> str:
         raise TypeError("Expected timestamp to have a value, got None.")
 
     return timestamp
+
+
+def get_realtime_info() -> List[Dict[str, str]]:
+    """Gets the realtime carpark information from LTA API
+
+    Returns:
+        List[Dict[str, str]]: The realtime carpark information
+    """
