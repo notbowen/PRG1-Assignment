@@ -8,6 +8,7 @@
 
 from utils.input import validate_input_str
 from normal import main as normal_main
+from additional import main as additional_main
 
 title = """
   _____  _____   _____   __                    _                                  _   
@@ -32,8 +33,7 @@ def main():
     if choice.upper() == "N":
         normal_main()
     else:
-        # TODO: Impleme
-        pass
+        additional_main()
 
 if __name__ == "__main__":
     main()

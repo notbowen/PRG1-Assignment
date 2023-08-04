@@ -95,15 +95,18 @@ def option_3() -> None:
     )
 
     # Get the carpark availability
-    cp_info = load_file(filename)
+    cp_availability = load_file(filename)
 
     # Get and set timestamp
-    timestamp = cp_info.pop(0)
+    timestamp = cp_availability.pop(0)
     set_timestamp(timestamp)
 
+    # Get the carpark information
+    cp_info = get_carpark_information()
+
     # Associate the carpark information & availability and get timestamp
-    cp_info = parse_carpark_information(cp_info)
-    associate_carpark_info(cp_info)
+    cp_availability = parse_carpark_information(cp_availability)
+    associate_carpark_info(cp_availability, cp_info)
 
     # Prints out header
     print(timestamp)
