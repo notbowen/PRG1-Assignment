@@ -167,6 +167,7 @@ def marker_click(marker):
 
         # Set image
         marker.image = final_image
+        marker.image_hidden = True
 
     # Toggle image visibility
     if marker.image_hidden:
