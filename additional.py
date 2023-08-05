@@ -10,7 +10,8 @@ import tkintermapview as tk_map
 from PIL import Image, ImageTk, ImageDraw, ImageFont
 
 from utils.files import load_file
-from utils.carpark import parse_carpark_information, get_carpark_information, associate_carpark_info, get_realtime_info
+from utils.carpark import get_carpark_information, get_realtime_info
+from utils.carpark import parse_carpark_information, associate_carpark_info
 
 data_sources = [
     "carpark-availability-v1.csv",
