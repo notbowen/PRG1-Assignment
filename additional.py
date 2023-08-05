@@ -90,7 +90,7 @@ def show_map(frame: tk.Frame):
         if percentage < 25:
             inner_color = "#00FF00"
             outer_color = "#006400"
-        elif percentage < 50:
+        elif percentage < 75:
             inner_color = "#FFFF00"
             outer_color = "#FFA500"
         else:
