@@ -151,7 +151,7 @@ def parse_carpark_information(data: List[str]) -> List[Dict[str, str]]:
     # Loop through data, format and append
     for info in data:
         carpark_dict = {k: v for k, v in zip(
-            headers.split(','), info.split(','))}
+            headers.split(',', 3), info.split(',', 3))}
         carpark_information.append(carpark_dict)
 
     # Return the list of dicts
