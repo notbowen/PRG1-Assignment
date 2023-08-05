@@ -87,13 +87,16 @@ def show_map(frame: tk.Frame):
 
         # Get availability percentage and set marker color
         percentage = data["Percentage"]
-        if percentage < 25:
+        if percentage > 75:
+            # Green
             inner_color = "#00FF00"
             outer_color = "#006400"
-        elif percentage < 75:
+        elif percentage > 25:
+            # Yellow
             inner_color = "#FFFF00"
             outer_color = "#FFA500"
         else:
+            # Red
             inner_color = "#FF0000"
             outer_color = "#8B0000"
 
