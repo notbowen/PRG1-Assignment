@@ -93,7 +93,11 @@ def associate_carpark_info(
     if get_location:
         locations = get_carpark_locations()
         for carpark_no, location in locations.items():
-            cp_info[carpark_no].append(location)
+            # Tries to load information
+            try:
+                cp_info[carpark_no].append(location)
+            except KeyError:
+                pass
 
     # Map all the available carparks into the loaded cp_info,
     # Leaves some values blank if no associated carpark is found
