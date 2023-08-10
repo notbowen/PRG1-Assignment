@@ -13,7 +13,7 @@ from tkinter import messagebox
 from PIL import Image, ImageTk, ImageDraw, ImageFont
 from typing import Dict, List
 
-from utils.files import load_file
+from utils.files import load_file, write_file
 from utils.carpark import get_carpark_information, get_realtime_info
 from utils.carpark import parse_carpark_information, associate_carpark_info
 from utils.input import validate_num
@@ -64,8 +64,10 @@ def show_map(frame: tk.Frame):
     # Load carpark data
     if chosen_data_source == data_sources[2]:
         cp_availability = get_realtime_info()
+        timestamp = cp_availability.pop(0)
     else:
-        cp_availability = load_file(chosen_data_source)[1:]  # Remove header
+        cp_availability = load_file(chosen_data_source)
+        timestamp = cp_availability.pop(0)
         cp_availability = parse_carpark_information(cp_availability)
 
     # Handle failed request
@@ -96,15 +98,21 @@ def show_map(frame: tk.Frame):
     cp_location.place(in_=cp_location_label, x=100)
 
     # Filter button
-    filter_btn = tk.Button(frame, text="Filter")
+    filter_btn = tk.Button(frame, text="Filter",
+                           command=lambda: filter(
+                               map_widget, linked_info,
+                               cp_location, cp_percentage
+                           ))
     filter_btn.place(x=640, y=0, anchor="ne")
 
     # Export button
-    export_btn = tk.Button(frame, text="Export")
+    export_btn = tk.Button(frame, text="Export",
+                           command=lambda: export_data(linked_info, timestamp))
     export_btn.place(x=690, y=0, anchor="ne")
 
     # Show most lots button
-    most_lots_btn = tk.Button(frame, text="Most Lots")
+    most_lots_btn = tk.Button(
+        frame, text="Most Lots", command=lambda: most_lots(map_widget, linked_info))
     most_lots_btn.place(x=760, y=0, anchor="ne")
 
     # Initialise map
@@ -200,26 +208,6 @@ def set_data_source(selection: str):
     chosen_data_source = selection
 
 
-def on_filter(frame: tk.Frame, cp_percentage: tk.Entry, cp_location: tk.Entry):
-    """Function that is called when filter button is clicked
-
-    Args:
-        frame (tk.Frame): The main tkinter frame
-        cp_percentage (tk.Entry): The entry containing the percentage
-        cp_location (tk.Entry): The entry containing the location
-    """
-    global percentage, location
-
-    percentage = cp_percentage.get()
-    if percentage == "":
-        percentage = "0"
-
-    location = cp_location.get()
-    location = location.upper()
-
-    show_map(frame)
-
-
 def clear_frame(frame: tk.Frame):
     """Clears the Tkinter window
 
@@ -229,6 +217,99 @@ def clear_frame(frame: tk.Frame):
 
     for widget in frame.winfo_children():
         widget.destroy()
+
+
+def filter(
+    map_widget: tk_map.TkinterMapView,
+    data: List[Dict[str, str]],
+    location: tk.Entry,
+    percentage: tk.Entry
+):
+    """Filters the data based on the user input
+
+    Args:
+        map_view (tk_map.TkinterMapView): The map view
+        data (List[Dict[str, str]]): The list of carpark data
+        location (tk.Entry): The location tkinter entry
+        percentage (tk.Entry): The percentage tkinter entry
+    """
+
+    # Get location & percentage data and format them
+    location = location.get()
+    location = location.upper()
+
+    percentage = percentage.get()
+    if percentage == "":
+        percentage = "0.0"
+
+    # Generate a list of valid carparks
+    valid_cps = [cp for cp in data if (
+        location == "" or location in cp["Address"]
+    ) and (
+        cp["Percentage"] >= float(percentage)
+    )]
+
+    # Show map data with valid carparks
+    draw_markers(map_widget, valid_cps)
+
+
+def most_lots(map_widget: tk_map.TkinterMapView, data: List[Dict[str, str]]):
+    """Finds the carpark with the most number of lots and displays it
+
+    Args:
+        map_view (tk_map.TkinterMapView): The tkinter map view
+        data (List[Dict[str, str]]): The carpark data
+    """
+
+    # Loop through data and find max carpark
+    highest_carpark = data[0]
+    for carpark in data:
+        # Ignore blank location
+        if carpark["Location"] is None:
+            continue
+
+        # Compare and overwrite if highest
+        if int(carpark["Total Lots"]) > int(highest_carpark["Total Lots"]):
+            highest_carpark = carpark
+
+    # Draw marker for highest carpark
+    draw_markers(map_widget, [highest_carpark])
+
+
+def export_data(data: List[Dict[str, str]], timestamp: str):
+    """Exports the data into a csv file
+
+    Args:
+        data (List[Dict[str, str]]): The data to export
+        timestamp (str): The timestamp to write to the file
+    """
+
+    # Sort by available lots
+    sorted_carpark = sorted(data, key=lambda cp: int(cp["Lots Available"]))
+
+    # Loop through sorted carparks and write to file
+    content = ""
+
+    # Write timestamp and headers
+    content += timestamp + '\n'
+    content += "Carpark Number,Total Lots,Lots Available,Address\n"
+
+    # Write the sorted data to the csv file
+    for cp in sorted_carpark:
+        data = [cp["Carpark Number"], cp["Total Lots"],
+                cp["Lots Available"], cp["Address"]]
+        content += ",".join(data)
+        content += '\n'
+
+    # Apply changes to the csv file
+    write_file("carpark-availability-with-addresses.csv", content)
+
+    # Alert the user the file has been written
+    lines = len(sorted_carpark) + 2
+    messagebox.showinfo(
+        "Success!", "Wrote {} lines to: ./res/carpark-availability-with-addresses.csv!"
+        .format(lines)
+    )
 
 
 def marker_click(marker):
