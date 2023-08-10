@@ -191,16 +191,29 @@ def get_carpark_locations() -> Dict[str, str]:
     return formatted_data
 
 
-def get_realtime_info() -> List[Dict[str, str]]:
+def get_realtime_info() -> List[Dict[str, str]] | None:
     """Gets the realtime parking data from gov API
 
     Returns:
         List[Dict[str, str]]: The carpark data formatted
     """
 
-    r = requests.get(
+    # Get data from API
+    try:
+        r = requests.get(
         "https://api.data.gov.sg/v1/transport/carpark-availability")
-    data = r.json()["items"][0]["carpark_data"]
+    except Exception as e:
+        print("Error while fetching data!")
+        print("Error: " + str(e))
+        return None
+
+    # Parse data & Handle failed request
+    try:    
+        data = r.json()["items"][0]["carpark_data"]
+    except Exception as e:
+        print("Error while getting realtime info!")
+        print("Error: " + str(e))
+        return None
 
     formatted_data = []
 

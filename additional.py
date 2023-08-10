@@ -5,8 +5,11 @@
 # Implements additional requirements for PRG1 '23 Final Assignment
 # Interactive map with real time data
 
+import sys
+
 import tkinter as tk
 import tkintermapview as tk_map
+from tkinter import messagebox
 from PIL import Image, ImageTk, ImageDraw, ImageFont
 
 from utils.files import load_file
@@ -62,6 +65,11 @@ def show_map(frame: tk.Frame):
     else:
         cp_availability = load_file(chosen_data_source)[1:]  # Remove header
         cp_availability = parse_carpark_information(cp_availability)
+
+    # Handle failed request
+    if cp_availability is None:
+        messagebox.showerror("ERROR!", "Failed to get realtime data!")
+        sys.exit(1)
 
     # Link carpark data
     cp_info = get_carpark_information()
