@@ -10,7 +10,6 @@ Will try to explain the inner workings of the code soon.
 
 ![image](https://github.com/notbowen/PRG1-Assignment/assets/85286288/3ea59448-b115-4ada-a3b2-6add7bb5574a)
 
-
 ## Setup
 
 1. A .env file containing a valid [LTA Datamall](https://datamall.lta.gov.sg/content/datamall/en/request-for-api.html) API key is required
