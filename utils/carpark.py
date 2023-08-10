@@ -132,30 +132,6 @@ def parse_carpark_information(data: List[str]) -> List[Dict[str, str]]:
     return carpark_information
 
 
-def set_timestamp(tstamp: str) -> None:
-    """Function to set the timestamp
-
-    Args:
-        tstamp (str): The value of the timestamp
-    """
-    global timestamp
-    timestamp = tstamp
-
-
-def get_timestamp() -> str:
-    """Function to return the timestamp read from the .csv file
-    WARNING: Run load_all_carpark_info() before running this
-
-    Returns:
-        str: The timestamp
-    """
-
-    if timestamp is None:
-        raise TypeError("Expected timestamp to have a value, got None.")
-
-    return timestamp
-
-
 def get_carpark_locations() -> Dict[str, str]:
     """Gets the realtime carpark location datafrom LTA API
 
@@ -207,6 +183,15 @@ def get_realtime_info() -> List[Dict[str, str]] | None:
         print("Error: " + str(e))
         return None
 
+    # Get timestamp from data
+    try:
+        timestamp = r.json()["items"][0]["timestamp"]
+        timestamp = "Timestamp: " + timestamp  # Format timestamp correctly
+    except Exception as e:
+        print("Error while getting realtime info!")
+        print("Error: " + str(e))
+        return None
+
     # Parse data & Handle failed request
     try:
         data = r.json()["items"][0]["carpark_data"]
@@ -215,7 +200,7 @@ def get_realtime_info() -> List[Dict[str, str]] | None:
         print("Error: " + str(e))
         return None
 
-    formatted_data = []
+    formatted_data = [timestamp]
 
     for cp in data:
         cp_info = {}

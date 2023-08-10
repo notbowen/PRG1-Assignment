@@ -10,7 +10,6 @@
 from utils.input import validate_input_str, validate_input_num
 from utils.carpark import get_carpark_information
 from utils.carpark import associate_carpark_info, parse_carpark_information
-from utils.carpark import get_timestamp, set_timestamp
 from utils.files import load_file, write_file
 
 from typing import List, Dict
@@ -78,9 +77,9 @@ def option_2(carpark_info: List[Dict[str, str]], _: List[Dict[str, str]]) -> Non
 
 
 def option_3(
-        carpark_info: List[Dict[str, str]],
-        _: List[Dict[str, str]]
-    ) -> List[Dict[str, str]]:
+    carpark_info: List[Dict[str, str]],
+    _: List[Dict[str, str]]
+) -> List[Dict[str, str]]:
     """Reads the user-specified file and loads the data to carpark_availability"""
     # Prints out option header
     print("Option 3: Read Carpark Availability Data File")
@@ -97,7 +96,6 @@ def option_3(
 
     # Get and set timestamp
     timestamp = cp_availability.pop(0)
-    set_timestamp(timestamp)
 
     # Associate the carpark information & availability and get timestamp
     cp_availability = parse_carpark_information(cp_availability)
@@ -107,7 +105,7 @@ def option_3(
     print(timestamp)
 
     # Return associated carpark info
-    return all_cp_info
+    return timestamp, all_cp_info
 
 
 def option_4(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
@@ -207,7 +205,8 @@ def option_8(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
     location = location.upper()
 
     # Filter carpark data by address
-    carparks_at_location = [cp for cp in all_cp_info if location in cp["Address"]]
+    carparks_at_location = [
+        cp for cp in all_cp_info if location in cp["Address"]]
 
     # Display location not found if no carparks are found
     if len(carparks_at_location) == 0:
@@ -254,14 +253,12 @@ def option_9(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
         num, total, available, percentage, address))
 
 
-def option_10(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
+def option_10(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]], timestamp: str) -> None:
     """Function to create output file with sorted carpark info"""
     # Sort by available lots
     # Line taken from: https://stackoverflow.com/questions/72899/how-to-sort-a-list-of-dictionaries-by-a-value-of-the-dictionary-in-python
-    sorted_carpark = sorted(all_cp_info, key=lambda cp: int(cp["Lots Available"]))
-
-    # Get timestamp
-    timestamp = get_timestamp()
+    sorted_carpark = sorted(
+        all_cp_info, key=lambda cp: int(cp["Lots Available"]))
 
     # Loop through sorted carparks and write to file
     content = ""
@@ -292,6 +289,7 @@ def main() -> None:
     # Load carpark information
     cp_info = get_carpark_information()
     all_cp_info = None
+    timestamp = None
 
     # Mainloop
     while True:
@@ -308,7 +306,9 @@ def main() -> None:
             continue
 
         # Run specified option
-        if option != 3:
+        if option != 3 and option != 10:
             eval("option_{}({}, {})".format(option, cp_info, all_cp_info))
+        elif option == 10:
+            option_10(cp_info, all_cp_info, timestamp)
         else:
-            all_cp_info = option_3(cp_info, all_cp_info)
+            timestamp, all_cp_info = option_3(cp_info, all_cp_info)
