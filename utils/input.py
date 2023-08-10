@@ -84,7 +84,7 @@ def validate_input_num(
     # Keep looping till the user inputs a valid value
     while True:
         user_input = input(prompt)
-        if _validate_num(user_input, values_to_accept):
+        if validate_num(user_input, values_to_accept):
             break
         print(invalid_prompt)
 
@@ -128,7 +128,7 @@ def _validate_str(
     return False
 
 
-def _validate_num(
+def validate_num(
         user_input: str,
         values_to_accept: List[int | float] | range | str
 ) -> bool:

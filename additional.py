@@ -11,10 +11,12 @@ import tkinter as tk
 import tkintermapview as tk_map
 from tkinter import messagebox
 from PIL import Image, ImageTk, ImageDraw, ImageFont
+from typing import Dict
 
 from utils.files import load_file
 from utils.carpark import get_carpark_information, get_realtime_info
 from utils.carpark import parse_carpark_information, associate_carpark_info
+from utils.input import validate_num
 
 data_sources = [
     "carpark-availability-v1.csv",
@@ -23,6 +25,9 @@ data_sources = [
 ]
 
 chosen_data_source = data_sources[0]
+
+location = ""
+percentage = "0"
 
 
 def prompt_choice(frame: tk.Frame):
@@ -76,9 +81,33 @@ def show_map(frame: tk.Frame):
     linked_info = associate_carpark_info(
         cp_availability, cp_info, get_location=True)
 
+    # Initialise filter by percentage
+    cp_percentage_label = tk.Label(frame, text="Filter by percentage: ")
+    cp_percentage_label.place(x=0, y=0)
+
+    # Register input validation callback
+    vcmd = frame.register(lambda s: s == "" or validate_num(s, range(0, 101)))
+    cp_percentage = tk.Entry(frame, validate='key',
+                             validatecommand=(vcmd, "%P"))
+    cp_percentage.insert(tk.END, percentage)  # Prefill with percentage
+    cp_percentage.place(in_=cp_percentage_label, x=120)
+
+    # Initialise filter by carpark
+    cp_location_label = tk.Label(frame, text="Filter by location: ")
+    cp_location_label.place(x=250, y=0)
+
+    cp_location = tk.Entry(frame, width=50)
+    cp_location.insert(tk.END, location)  # Prefill with location
+    cp_location.place(in_=cp_location_label, x=100)
+
+    # Filter button
+    filter_btn = tk.Button(
+        frame, text="Filter", command=lambda: on_filter(frame, cp_percentage, cp_location))
+    filter_btn.place(x=800, y=0, anchor="ne")
+
     # Initialise map
-    map_widget = tk_map.TkinterMapView(frame, width=800, height=600)
-    map_widget.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    map_widget = tk_map.TkinterMapView(frame, width=800, height=570)
+    map_widget.place(y=30)
 
     # Center the map to Singapore
     map_widget.set_position(1.290270, 103.851959)
@@ -90,42 +119,64 @@ def show_map(frame: tk.Frame):
         if data["Location"] is None:
             continue
 
-        # Get location coordinates and map to Tkinter map
-        degrees, minutes = data["Location"].split(' ')
-        degrees, minutes = float(degrees), float(minutes)
+        # Filter data by percentage
+        if data["Percentage"] < float(percentage):
+            continue
 
-        # Get availability percentage and set marker color
-        percentage = data["Percentage"]
-        if percentage > 75:
-            # Green
-            inner_color = "#00FF00"
-            outer_color = "#006400"
-        elif percentage > 25:
-            # Yellow
-            inner_color = "#FFFF00"
-            outer_color = "#FFA500"
-        else:
-            # Red
-            inner_color = "#FF0000"
-            outer_color = "#8B0000"
+        # Filter data by location
+        if location != "" and location not in data["Address"]:
+            continue
 
-        # Generate data to show on image
-        display_text = ""
-        display_text += data["Carpark Number"] + '\n'
-        display_text += "Available Lots: " + data["Lots Available"] + '\n'
-        display_text += "Total Lots: " + data["Total Lots"] + '\n'
-        display_text += "Percentage: " + \
-            str(round(data["Percentage"], 2)) + "%"
+        # Draw data onto the map
+        draw_marker(map_widget, data)
 
-        # Display marker
-        map_widget.set_marker(
-            degrees, minutes,
-            text=data["Carpark Number"],
-            marker_color_circle=inner_color,
-            marker_color_outside=outer_color,
-            data=display_text,
-            command=marker_click
-        )
+
+def draw_marker(map_widget: tk_map.TkinterMapView, data: Dict[str, str]):
+    """Function to draw a marker on a Tkinter MapView, using the given carpark data
+    formatted in a dict.
+
+    Args:
+        map_widget (tk_map.TkinterMapView): The map to draw the marker on
+        data (Dict[str, str]): The carpark data in a dictionary
+    """
+
+    # Get location coordinates and map to Tkinter map
+    degrees, minutes = data["Location"].split(' ')
+    degrees, minutes = float(degrees), float(minutes)
+
+    # Get availability percentage and set marker color
+    percentage = data["Percentage"]
+    if percentage > 75:
+        # Green
+        inner_color = "#00FF00"
+        outer_color = "#006400"
+    elif percentage > 25:
+        # Yellow
+        inner_color = "#FFFF00"
+        outer_color = "#FFA500"
+    else:
+        # Red
+        inner_color = "#FF0000"
+        outer_color = "#8B0000"
+
+    # Generate data to show on image
+    display_text = ""
+    display_text += data["Carpark Number"] + '\n'
+    display_text += "Available Lots: " + data["Lots Available"] + '\n'
+    display_text += "Total Lots: " + data["Total Lots"] + '\n'
+    display_text += "Percentage: " + \
+        str(round(data["Percentage"], 2)) + "%\n"
+    display_text += "Address: " + data["Address"]
+
+    # Display marker
+    map_widget.set_marker(
+        degrees, minutes,
+        text=data["Carpark Number"],
+        marker_color_circle=inner_color,
+        marker_color_outside=outer_color,
+        data=display_text,
+        command=marker_click
+    )
 
 
 def main():
@@ -151,6 +202,26 @@ def set_data_source(selection: str):
     chosen_data_source = selection
 
 
+def on_filter(frame: tk.Frame, cp_percentage: tk.Entry, cp_location: tk.Entry):
+    """Function that is called when filter button is clicked
+
+    Args:
+        frame (tk.Frame): The main tkinter frame
+        cp_percentage (tk.Entry): The entry containing the percentage
+        cp_location (tk.Entry): The entry containing the location
+    """
+    global percentage, location
+
+    percentage = cp_percentage.get()
+    if percentage == "":
+        percentage = "0"
+
+    location = cp_location.get()
+    location = location.upper()
+
+    show_map(frame)
+
+
 def clear_frame(frame: tk.Frame):
     """Clears the Tkinter window
 
@@ -172,7 +243,7 @@ def marker_click(marker):
 
         # Generate image
         # Credits: https://stackoverflow.com/questions/63280719/tkinter-how-to-change-text-into-an-image
-        image = Image.new("RGB", (200, 75), (255, 255, 255))
+        image = Image.new("RGB", (300, 75), (255, 255, 255))
         draw = ImageDraw.Draw(image)
         font = ImageFont.truetype("arial.ttf", size=12)
         draw.text((0, 0), font=font, text=display_text, fill="black")
