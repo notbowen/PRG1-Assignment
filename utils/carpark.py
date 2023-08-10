@@ -13,11 +13,6 @@ import os
 from typing import Dict, List
 from utils.files import load_file
 
-# Global variables for caching
-carpark_info = None
-all_carpark_info = None
-timestamp = None
-
 
 def get_carpark_information() -> List[Dict[str, str]]:
     """Loads and caches the carpark information
@@ -27,36 +22,11 @@ def get_carpark_information() -> List[Dict[str, str]]:
     """
     global carpark_info
 
-    # Check if carpark info has been cached, and cache it if it hasn't
-    if carpark_info is not None:
-        return carpark_info
-
     carpark_info = load_file("carpark-information.csv")
     carpark_info = parse_carpark_information(carpark_info)
 
     # Return carpark information
     return carpark_info
-
-
-def get_all_carpark_info() -> List[Dict[str, str]]:
-    """Function to get all the carpark information,
-    including availability and information.
-    Caches the data for performance improvement.
-
-    WARNING: This function will fail when called before calling load_all_carpark_info
-
-    Args:
-        filename (str): The filename to load carpark availability from
-
-    Returns:
-        List[Dict[str, str]]: All carpark information formatted accordingly
-    """
-
-    # Check if all cp info has been cached, if not crash the program
-    if all_carpark_info is None:
-        raise TypeError("Expected all_carpark_info to have a value, not None.")
-
-    return all_carpark_info
 
 
 def associate_carpark_info(

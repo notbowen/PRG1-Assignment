@@ -9,12 +9,11 @@
 # Imports
 from utils.input import validate_input_str, validate_input_num
 from utils.carpark import get_carpark_information
-from utils.carpark import get_all_carpark_info, associate_carpark_info, parse_carpark_information
+from utils.carpark import associate_carpark_info, parse_carpark_information
 from utils.carpark import get_timestamp, set_timestamp
 from utils.files import load_file, write_file
 
-# Global variables
-ran_opt_3 = False
+from typing import List, Dict
 
 
 def main_menu() -> int:
@@ -46,22 +45,20 @@ MENU
     return choice
 
 
-def option_1() -> None:
+def option_1(carpark_info: List[Dict[str, str]], _: List[Dict[str, str]]) -> None:
     """Function to display total number of carparks in carpark_info"""
-    carpark_info = get_carpark_information()
     total_cps = len(carpark_info)
 
     print("Option 1: Display Total Number of Carparks in 'carpark-information.csv'")
     print("Total Number of carparks in 'carpark-information.csv': {}".format(total_cps))
 
 
-def option_2() -> None:
+def option_2(carpark_info: List[Dict[str, str]], _: List[Dict[str, str]]) -> None:
     """Function to display all basement carparks"""
     # Print option
     print("Option 2: Display All Basement Carparks in 'carpark-information.csv'")
 
     # Get basement carparks
-    carpark_info = get_carpark_information()
     basements = [cp for cp in carpark_info
                  if cp["Carpark Type"] == "BASEMENT CAR PARK"]
 
@@ -80,10 +77,11 @@ def option_2() -> None:
     print("Total number: {}".format(len(basements)))
 
 
-def option_3() -> None:
+def option_3(
+        carpark_info: List[Dict[str, str]],
+        _: List[Dict[str, str]]
+    ) -> List[Dict[str, str]]:
     """Reads the user-specified file and loads the data to carpark_availability"""
-    global ran_opt_3
-
     # Prints out option header
     print("Option 3: Read Carpark Availability Data File")
 
@@ -101,42 +99,37 @@ def option_3() -> None:
     timestamp = cp_availability.pop(0)
     set_timestamp(timestamp)
 
-    # Get the carpark information
-    cp_info = get_carpark_information()
-
     # Associate the carpark information & availability and get timestamp
     cp_availability = parse_carpark_information(cp_availability)
-    associate_carpark_info(cp_availability, cp_info)
+    all_cp_info = associate_carpark_info(cp_availability, carpark_info)
 
     # Prints out header
     print(timestamp)
 
-    # Toggle option 3 ran
-    ran_opt_3 = True
+    # Return associated carpark info
+    return all_cp_info
 
 
-def option_4() -> None:
+def option_4(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
     """Function to print the total number of carparks in the file read"""
     # Print header
     print("Option 4: Print Total Number of Carparks in the File Read in [3]")
 
     # Get total number
-    carpark_availability = get_all_carpark_info()
-    total = len(carpark_availability)
+    total = len(all_cp_info)
 
     # Display total number
     print("Total Number of Carparks in the File: {}".format(total))
 
 
-def option_5() -> None:
+def option_5(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
     """Function to display all carparks that are full"""
     # Print header
     print("Option 5: Display Carparks without Available Lots")
 
     # Get carparks without lots
-    carpark_availability = get_all_carpark_info()
     empty_cps = [
-        cp for cp in carpark_availability if cp["Lots Available"] == '0']
+        cp for cp in all_cp_info if cp["Lots Available"] == '0']
 
     # Loop through empty carparks an print their number
     for carpark in empty_cps:
@@ -146,7 +139,7 @@ def option_5() -> None:
     print("Total number: {}".format(len(empty_cps)))
 
 
-def option_6() -> None:
+def option_6(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
     """Function to display carparks with x% availibility"""
     # Print header
     print("Option 6: Display Carparks With At Least x% Available Lots")
@@ -156,9 +149,8 @@ def option_6() -> None:
         "Enter the percentage required: ", range(0, 101))
 
     # Get carparks that are above or equal to that percentage
-    carpark_availability = get_all_carpark_info()
     cps_available = [
-        cp for cp in carpark_availability if cp["Percentage"] >= percentage]
+        cp for cp in all_cp_info if cp["Percentage"] >= percentage]
 
     # Loop through and display
     print("{:10} {:10} {:14} {:10}".format("Carpark No",
@@ -176,7 +168,7 @@ def option_6() -> None:
     print("Total number: {}".format(len(cps_available)))
 
 
-def option_7() -> None:
+def option_7(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
     """Function to display carparks with x% availibility"""
     # Print header
     print("Option 7: Display Addresses of Carparks With At Least x% Available Lots")
@@ -186,9 +178,8 @@ def option_7() -> None:
         "Enter the percentage required: ", range(0, 101))
 
     # Get carparks that are above or equal to that percentage
-    carpark_availability = get_all_carpark_info()
     cps_available = [
-        cp for cp in carpark_availability if cp["Percentage"] >= percentage]
+        cp for cp in all_cp_info if cp["Percentage"] >= percentage]
 
     # Loop through and display
     print("{:10} {:10} {:14} {:10}   {}".format("Carpark No",
@@ -207,7 +198,7 @@ def option_7() -> None:
     print("Total number: {}".format(len(cps_available)))
 
 
-def option_8() -> None:
+def option_8(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
     """Function to display all carparks at a given location"""
     print("Option 8: Display All Carparks at Given Location")
 
@@ -215,11 +206,8 @@ def option_8() -> None:
     location = input("Please enter the location to search for: ")
     location = location.upper()
 
-    # Get all carpark data
-    carparks = get_all_carpark_info()
-
     # Filter carpark data by address
-    carparks_at_location = [cp for cp in carparks if location in cp["Address"]]
+    carparks_at_location = [cp for cp in all_cp_info if location in cp["Address"]]
 
     # Display location not found if no carparks are found
     if len(carparks_at_location) == 0:
@@ -243,15 +231,12 @@ def option_8() -> None:
     print("Total number: {}".format(len(carparks_at_location)))
 
 
-def option_9() -> None:
+def option_9(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
     """Function to display carparks with the most parking lots"""
 
-    # Get all carparks
-    carparks = get_all_carpark_info()
-
     # Get the highest carpark
-    highest_cp = carparks[0]
-    for cp in carparks:
+    highest_cp = all_cp_info[0]
+    for cp in all_cp_info:
         if cp["Total Lots"] > highest_cp["Total Lots"]:
             highest_cp = cp
 
@@ -269,14 +254,11 @@ def option_9() -> None:
         num, total, available, percentage, address))
 
 
-def option_10() -> None:
+def option_10(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
     """Function to create output file with sorted carpark info"""
-    # Get all carparks
-    carparks = get_all_carpark_info()
-
     # Sort by available lots
     # Line taken from: https://stackoverflow.com/questions/72899/how-to-sort-a-list-of-dictionaries-by-a-value-of-the-dictionary-in-python
-    sorted_carpark = sorted(carparks, key=lambda cp: int(cp["Lots Available"]))
+    sorted_carpark = sorted(all_cp_info, key=lambda cp: int(cp["Lots Available"]))
 
     # Get timestamp
     timestamp = get_timestamp()
@@ -308,7 +290,8 @@ def option_10() -> None:
 
 def main() -> None:
     # Load carpark information
-    get_carpark_information()
+    cp_info = get_carpark_information()
+    all_cp_info = None
 
     # Mainloop
     while True:
@@ -320,9 +303,12 @@ def main() -> None:
             break
 
         # Check if option 3 has been ran for options 4..=7
-        if option > 3 and not ran_opt_3:
+        if option > 3 and all_cp_info is None:
             print("Please run option 3 first!")
             continue
 
-        # Run specified option and wait for user to press enter to continue
-        eval("option_{}()".format(option))
+        # Run specified option
+        if option != 3:
+            eval("option_{}({}, {})".format(option, cp_info, all_cp_info))
+        else:
+            all_cp_info = option_3(cp_info, all_cp_info)
