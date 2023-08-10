@@ -11,7 +11,7 @@ import tkinter as tk
 import tkintermapview as tk_map
 from tkinter import messagebox
 from PIL import Image, ImageTk, ImageDraw, ImageFont
-from typing import Dict
+from typing import Dict, List
 
 from utils.files import load_file
 from utils.carpark import get_carpark_information, get_realtime_info
@@ -25,9 +25,6 @@ data_sources = [
 ]
 
 chosen_data_source = data_sources[0]
-
-location = ""
-percentage = "0"
 
 
 def prompt_choice(frame: tk.Frame):
@@ -89,21 +86,26 @@ def show_map(frame: tk.Frame):
     vcmd = frame.register(lambda s: s == "" or validate_num(s, range(0, 101)))
     cp_percentage = tk.Entry(frame, validate='key',
                              validatecommand=(vcmd, "%P"))
-    cp_percentage.insert(tk.END, percentage)  # Prefill with percentage
     cp_percentage.place(in_=cp_percentage_label, x=120)
 
     # Initialise filter by carpark
     cp_location_label = tk.Label(frame, text="Filter by location: ")
     cp_location_label.place(x=250, y=0)
 
-    cp_location = tk.Entry(frame, width=50)
-    cp_location.insert(tk.END, location)  # Prefill with location
+    cp_location = tk.Entry(frame, width=40)
     cp_location.place(in_=cp_location_label, x=100)
 
     # Filter button
-    filter_btn = tk.Button(
-        frame, text="Filter", command=lambda: on_filter(frame, cp_percentage, cp_location))
-    filter_btn.place(x=800, y=0, anchor="ne")
+    filter_btn = tk.Button(frame, text="Filter")
+    filter_btn.place(x=640, y=0, anchor="ne")
+
+    # Export button
+    export_btn = tk.Button(frame, text="Export")
+    export_btn.place(x=690, y=0, anchor="ne")
+
+    # Show most lots button
+    most_lots_btn = tk.Button(frame, text="Most Lots")
+    most_lots_btn.place(x=760, y=0, anchor="ne")
 
     # Initialise map
     map_widget = tk_map.TkinterMapView(frame, width=800, height=570)
@@ -113,70 +115,66 @@ def show_map(frame: tk.Frame):
     map_widget.set_position(1.290270, 103.851959)
     map_widget.set_zoom(11)
 
-    # Map carpark data to map
-    for data in linked_info:
-        # Account for location with none values
-        if data["Location"] is None:
-            continue
-
-        # Filter data by percentage
-        if data["Percentage"] < float(percentage):
-            continue
-
-        # Filter data by location
-        if location != "" and location not in data["Address"]:
-            continue
-
-        # Draw data onto the map
-        draw_marker(map_widget, data)
+    # Load data to map
+    draw_markers(map_widget, linked_info)
 
 
-def draw_marker(map_widget: tk_map.TkinterMapView, data: Dict[str, str]):
+def draw_markers(map_widget: tk_map.TkinterMapView, data: List[Dict[str, str]]):
     """Function to draw a marker on a Tkinter MapView, using the given carpark data
     formatted in a dict.
 
     Args:
         map_widget (tk_map.TkinterMapView): The map to draw the marker on
-        data (Dict[str, str]): The carpark data in a dictionary
+        data (ListDict[str, str]]): The list of carpark data
     """
 
-    # Get location coordinates and map to Tkinter map
-    degrees, minutes = data["Location"].split(' ')
-    degrees, minutes = float(degrees), float(minutes)
+    # Clear map markers
+    map_widget.delete_all_marker()
 
-    # Get availability percentage and set marker color
-    percentage = data["Percentage"]
-    if percentage > 75:
-        # Green
-        inner_color = "#00FF00"
-        outer_color = "#006400"
-    elif percentage > 25:
-        # Yellow
-        inner_color = "#FFFF00"
-        outer_color = "#FFA500"
-    else:
-        # Red
-        inner_color = "#FF0000"
-        outer_color = "#8B0000"
+    # Loop through list and draw
+    for carpark in data:
+        # Parse location data and skip if none
+        location = carpark.get("Location")
+        if location is None:
+            continue
 
-    # Generate data to show on image
-    display_text = ""
-    display_text += data["Carpark Number"] + '\n'
-    display_text += "Available Lots: " + data["Lots Available"] + '\n'
-    display_text += "Total Lots: " + data["Total Lots"] + '\n'
-    display_text += "Percentage: " + \
-        str(round(data["Percentage"], 2)) + "%\n"
-    display_text += "Address: " + data["Address"]
+        # Format data into lat & long
+        latitude, longitude = location.split(" ")
+        latitude, longitude = float(latitude), float(longitude)
 
-    # Display marker
-    map_widget.set_marker(
-        degrees, minutes,
-        text=data["Carpark Number"],
-        marker_color_circle=inner_color,
-        marker_color_outside=outer_color,
-        data=display_text,
-        command=marker_click
-    )
+        # Get availability percentage and set marker color
+        percentage = carpark["Percentage"]
+        if percentage > 75:
+            # Green
+            inner_color = "#00FF00"
+            outer_color = "#006400"
+        elif percentage > 25:
+            # Yellow
+            inner_color = "#FFFF00"
+            outer_color = "#FFA500"
+        else:
+            # Red
+            inner_color = "#FF0000"
+            outer_color = "#8B0000"
+
+        # Generate data to show on image
+        display_text = ""
+        display_text += carpark["Carpark Number"] + '\n'
+        display_text += "Available Lots: " + carpark["Lots Available"] + '\n'
+        display_text += "Total Lots: " + carpark["Total Lots"] + '\n'
+        display_text += "Percentage: " + \
+            str(round(carpark["Percentage"], 2)) + "%\n"
+        display_text += "Address: " + carpark["Address"]
+
+        # Display marker
+        map_widget.set_marker(
+            latitude, longitude,
+            text=carpark["Carpark Number"],
+            marker_color_circle=inner_color,
+            marker_color_outside=outer_color,
+            data=display_text,
+            command=marker_click
+        )
 
 
 def main():
