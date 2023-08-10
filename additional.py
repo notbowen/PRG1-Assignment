@@ -133,6 +133,7 @@ def main():
     root = tk.Tk()
     root.geometry("800x600")
     root.title("Hu Bowen - PRG1 Assignment")
+    root.resizable(False, False)
 
     # Create frame
     frame = tk.Frame(root)
