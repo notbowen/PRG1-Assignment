@@ -201,14 +201,14 @@ def get_realtime_info() -> List[Dict[str, str]] | None:
     # Get data from API
     try:
         r = requests.get(
-        "https://api.data.gov.sg/v1/transport/carpark-availability")
+            "https://api.data.gov.sg/v1/transport/carpark-availability")
     except Exception as e:
         print("Error while fetching data!")
         print("Error: " + str(e))
         return None
 
     # Parse data & Handle failed request
-    try:    
+    try:
         data = r.json()["items"][0]["carpark_data"]
     except Exception as e:
         print("Error while getting realtime info!")
