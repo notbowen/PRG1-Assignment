@@ -5,12 +5,13 @@
 # carpark.py
 # In charge of giving properly formatted carpark information
 
-import requests
-import dotenv
-import sys
 import os
-
+import sys
 from typing import Dict, List
+
+import dotenv
+import requests
+
 from utils.files import load_file
 
 
@@ -30,9 +31,9 @@ def get_carpark_information() -> List[Dict[str, str]]:
 
 
 def associate_carpark_info(
-    available_cps: List[Dict[str, str]],
-    carpark_info: List[Dict[str, str]],
-    get_location: bool = False
+        available_cps: List[Dict[str, str]],
+        carpark_info: List[Dict[str, str]],
+        get_location: bool = False
 ) -> List[Dict[str, str]]:
     """Function to load all carpark information based on filename,
     without caching

@@ -11,10 +11,10 @@ INVALID_PROMPT = "Invalid input! Please enter again!"
 
 
 def validate_input_str(
-    prompt: str,
-    *values_to_accept: str,
-    ignore_case: bool = False,
-    invalid_prompt: str = INVALID_PROMPT
+        prompt: str,
+        *values_to_accept: str,
+        ignore_case: bool = False,
+        invalid_prompt: str = INVALID_PROMPT
 ) -> str:
     """Function to validate a user's string input,
     and returns the value only if it matches the values to accept.
@@ -51,6 +51,7 @@ def validate_input_str(
         print(invalid_prompt)
 
     return user_input
+
 
 def validate_input_num(
         prompt: str,
@@ -96,9 +97,9 @@ def validate_input_num(
 
 
 def _validate_str(
-    user_input: str,
-    *values_to_accept: str,
-    ignore_case: bool = False,
+        user_input: str,
+        *values_to_accept: str,
+        ignore_case: bool = False,
 ) -> bool:
     """Function to validate a given string input,
     and returns a boolean regarding if the conditions are met
@@ -154,7 +155,7 @@ def validate_num(
     elif user_input.lstrip('-').replace('.', '', 1).isdigit():
         user_input = float(user_input)
         if values_to_accept == "float":
-            return True 
+            return True
 
     else:
         return False

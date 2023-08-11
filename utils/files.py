@@ -31,6 +31,7 @@ def load_file(filename: str) -> List[str] | None:
 
     return data.splitlines()
 
+
 def write_file(filename: str, content: str) -> None:
     """Function to write data into a specified filename in the ./res folder
 

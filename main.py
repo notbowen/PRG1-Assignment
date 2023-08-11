@@ -6,9 +6,9 @@
 # In charge of getting the user input to switch between normal and additional mode
 # Before running the respective scripts
 
-from utils.input import validate_input_str
-from normal import main as normal_main
 from additional import main as additional_main
+from normal import main as normal_main
+from utils.input import validate_input_str
 
 title = """
   _____  _____   _____   __                    _                                  _   
@@ -20,6 +20,7 @@ title = """
                                                   __/ |                               
                                                  |___/                                
 """
+
 
 def main():
     print(title)
@@ -34,6 +35,7 @@ def main():
         normal_main()
     else:
         additional_main()
+
 
 if __name__ == "__main__":
     main()

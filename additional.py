@@ -6,16 +6,16 @@
 # Interactive map with real time data
 
 import sys
-
 import tkinter as tk
-import tkintermapview as tk_map
 from tkinter import messagebox
-from PIL import Image, ImageTk, ImageDraw, ImageFont
 from typing import Dict, List
 
-from utils.files import load_file, write_file
+import tkintermapview as tk_map
+from PIL import Image, ImageTk, ImageDraw, ImageFont
+
 from utils.carpark import get_carpark_information, get_realtime_info
 from utils.carpark import parse_carpark_information, associate_carpark_info
+from utils.files import load_file, write_file
 from utils.input import validate_num
 
 data_sources = [
@@ -171,7 +171,7 @@ def draw_markers(map_widget: tk_map.TkinterMapView, data: List[Dict[str, str]]):
         display_text += "Available Lots: " + carpark["Lots Available"] + '\n'
         display_text += "Total Lots: " + carpark["Total Lots"] + '\n'
         display_text += "Percentage: " + \
-            str(round(carpark["Percentage"], 2)) + "%\n"
+                        str(round(carpark["Percentage"], 2)) + "%\n"
         display_text += "Address: " + carpark["Address"]
 
         # Display marker
@@ -220,10 +220,10 @@ def clear_frame(frame: tk.Frame):
 
 
 def filter(
-    map_widget: tk_map.TkinterMapView,
-    data: List[Dict[str, str]],
-    location: tk.Entry,
-    percentage: tk.Entry
+        map_widget: tk_map.TkinterMapView,
+        data: List[Dict[str, str]],
+        location: tk.Entry,
+        percentage: tk.Entry
 ):
     """Filters the data based on the user input
 
@@ -244,10 +244,10 @@ def filter(
 
     # Generate a list of valid carparks
     valid_cps = [cp for cp in data if (
-        location == "" or location in cp["Address"]
+            location == "" or location in cp["Address"]
     ) and (
-        cp["Percentage"] >= float(percentage)
-    )]
+                         cp["Percentage"] >= float(percentage)
+                 )]
 
     # Show map data with valid carparks
     draw_markers(map_widget, valid_cps)

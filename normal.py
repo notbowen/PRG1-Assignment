@@ -6,13 +6,13 @@
 # Implementation of the basic & advanced requirements in
 # Assignment of PRG1, 2023
 
+from typing import List, Dict
+
+from utils.carpark import associate_carpark_info, parse_carpark_information
+from utils.carpark import get_carpark_information
+from utils.files import load_file, write_file
 # Imports
 from utils.input import validate_input_str, validate_input_num
-from utils.carpark import get_carpark_information
-from utils.carpark import associate_carpark_info, parse_carpark_information
-from utils.files import load_file, write_file
-
-from typing import List, Dict
 
 
 def main_menu() -> int:
@@ -77,8 +77,8 @@ def option_2(carpark_info: List[Dict[str, str]], _: List[Dict[str, str]]) -> Non
 
 
 def option_3(
-    carpark_info: List[Dict[str, str]],
-    _: List[Dict[str, str]]
+        carpark_info: List[Dict[str, str]],
+        _: List[Dict[str, str]]
 ) -> List[Dict[str, str]]:
     """Reads the user-specified file and loads the data to carpark_availability"""
     # Prints out option header
@@ -152,7 +152,7 @@ def option_6(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
 
     # Loop through and display
     print("{:10} {:10} {:14} {:10}".format("Carpark No",
-          "Total Lots", "Lots Available", "Percentage"))
+                                           "Total Lots", "Lots Available", "Percentage"))
     for cp in cps_available:
         num = cp["Carpark Number"]
         total = cp["Total Lots"]
@@ -181,7 +181,7 @@ def option_7(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
 
     # Loop through and display
     print("{:10} {:10} {:14} {:10}   {}".format("Carpark No",
-          "Total Lots", "Lots Available", "Percentage", "Address"))
+                                                "Total Lots", "Lots Available", "Percentage", "Address"))
     for cp in cps_available:
         num = cp["Carpark Number"]
         total = cp["Total Lots"]
@@ -215,7 +215,7 @@ def option_8(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
 
     # Format and display all carparks at location
     print("{:10} {:10} {:14} {:10}   {}".format("Carpark No",
-          "Total Lots", "Lots Available", "Percentage", "Address"))
+                                                "Total Lots", "Lots Available", "Percentage", "Address"))
     for cp in carparks_at_location:
         num = cp["Carpark Number"]
         total = cp["Total Lots"]
@@ -241,7 +241,7 @@ def option_9(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
 
     # Display the carpark information
     print("{:10} {:10} {:14} {:10}   {}".format("Carpark No",
-          "Total Lots", "Lots Available", "Percentage", "Address"))
+                                                "Total Lots", "Lots Available", "Percentage", "Address"))
 
     num = highest_cp["Carpark Number"]
     total = highest_cp["Total Lots"]
