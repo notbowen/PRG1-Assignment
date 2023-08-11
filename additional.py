@@ -212,7 +212,7 @@ def clear_frame(frame: tk.Frame):
     """Clears the Tkinter window
 
     Args:
-        window (tkinter.Tk): The window to clear
+        frame (tk.Frame): The frame to clear
     """
 
     for widget in frame.winfo_children():
@@ -228,7 +228,7 @@ def filter(
     """Filters the data based on the user input
 
     Args:
-        map_view (tk_map.TkinterMapView): The map view
+        map_widget (tk_map.TkinterMapView): The map view
         data (List[Dict[str, str]]): The list of carpark data
         location (tk.Entry): The location tkinter entry
         percentage (tk.Entry): The percentage tkinter entry
@@ -246,8 +246,8 @@ def filter(
     valid_cps = [cp for cp in data if (
             location == "" or location in cp["Address"]
     ) and (
-                         cp["Percentage"] >= float(percentage)
-                 )]
+            cp["Percentage"] >= float(percentage)
+    )]
 
     # Show map data with valid carparks
     draw_markers(map_widget, valid_cps)
@@ -257,7 +257,7 @@ def most_lots(map_widget: tk_map.TkinterMapView, data: List[Dict[str, str]]):
     """Finds the carpark with the most number of lots and displays it
 
     Args:
-        map_view (tk_map.TkinterMapView): The tkinter map view
+        map_widget (tk_map.TkinterMapView): The tkinter map view
         data (List[Dict[str, str]]): The carpark data
     """
 

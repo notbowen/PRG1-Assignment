@@ -6,7 +6,7 @@
 # Implementation of the basic & advanced requirements in
 # Assignment of PRG1, 2023
 
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from utils.carpark import associate_carpark_info, parse_carpark_information
 from utils.carpark import get_carpark_information
@@ -79,7 +79,7 @@ def option_2(carpark_info: List[Dict[str, str]], _: List[Dict[str, str]]) -> Non
 def option_3(
         carpark_info: List[Dict[str, str]],
         _: List[Dict[str, str]]
-) -> List[Dict[str, str]]:
+) -> tuple[str, list[dict[str, str]]]:
     """Reads the user-specified file and loads the data to carpark_availability"""
     # Prints out option header
     print("Option 3: Read Carpark Availability Data File")
@@ -129,7 +129,7 @@ def option_5(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
     empty_cps = [
         cp for cp in all_cp_info if cp["Lots Available"] == '0']
 
-    # Loop through empty carparks an print their number
+    # Loop through empty carparks and print their number
     for carpark in empty_cps:
         print("Carpark Number: {}".format(carpark["Carpark Number"]))
 
@@ -138,7 +138,7 @@ def option_5(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
 
 
 def option_6(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
-    """Function to display carparks with x% availibility"""
+    """Function to display carparks with x% availability"""
     # Print header
     print("Option 6: Display Carparks With At Least x% Available Lots")
 
@@ -167,7 +167,7 @@ def option_6(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
 
 
 def option_7(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
-    """Function to display carparks with x% availibility"""
+    """Function to display carparks with x% availability"""
     # Print header
     print("Option 7: Display Addresses of Carparks With At Least x% Available Lots")
 
