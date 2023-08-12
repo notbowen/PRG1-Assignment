@@ -241,6 +241,8 @@ def option_9(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
 
     # Get the carpark information
     num = highest_cp["Carpark Number"]
+    cp_type = highest_cp["Carpark Type"]
+    parking_type = highest_cp["Type of Parking System"]
     total = highest_cp["Total Lots"]
     available = highest_cp["Lots Available"]
     percentage = highest_cp["Percentage"]
@@ -252,6 +254,8 @@ def option_9(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
 
     # Display carpark information
     print("Carpark Number: {}".format(num))
+    print("Carpark Type: {}".format(cp_type))
+    print("Type of Parking System: {}".format(parking_type))
     print("Total Lots : {}".format(total))
     print("Lots Available: {}".format(available))
     print("Percentage: {:.1f}%".format(percentage))
