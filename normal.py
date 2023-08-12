@@ -235,7 +235,7 @@ def option_9(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
     # Get the highest carpark
     highest_cp = all_cp_info[0]
     for cp in all_cp_info:
-        if cp["Total Lots"] > highest_cp["Total Lots"]:
+        if int(cp["Total Lots"]) > int(highest_cp["Total Lots"]):
             highest_cp = cp
 
     # Display the carpark information
