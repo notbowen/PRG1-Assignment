@@ -6,12 +6,11 @@
 # Implementation of the basic & advanced requirements in
 # Assignment of PRG1, 2023
 
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
 from utils.carpark import associate_carpark_info, parse_carpark_information
 from utils.carpark import get_carpark_information
 from utils.files import load_file, write_file
-# Imports
 from utils.input import validate_input_str, validate_input_num
 
 
