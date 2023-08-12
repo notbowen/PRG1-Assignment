@@ -231,6 +231,7 @@ def option_8(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
 
 def option_9(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None:
     """Function to display carparks with the most parking lots"""
+    print("Option 9: Display carpark with the most parking lots")
 
     # Get the highest carpark
     highest_cp = all_cp_info[0]
@@ -238,18 +239,23 @@ def option_9(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
         if int(cp["Total Lots"]) > int(highest_cp["Total Lots"]):
             highest_cp = cp
 
-    # Display the carpark information
-    print("{:10} {:10} {:14} {:10}   {}".format("Carpark No",
-                                                "Total Lots", "Lots Available", "Percentage", "Address"))
-
+    # Get the carpark information
     num = highest_cp["Carpark Number"]
     total = highest_cp["Total Lots"]
     available = highest_cp["Lots Available"]
     percentage = highest_cp["Percentage"]
     address = highest_cp["Address"]
 
-    print("{:10} {:>10} {:>14} {:10.1f}   {}".format(
-        num, total, available, percentage, address))
+    # Display "No Address Found" if address is empty
+    if address == "":
+        address = "No Address Found"
+
+    # Display carpark information
+    print("Carpark Number: {}".format(num))
+    print("Total Lots : {}".format(total))
+    print("Lots Available: {}".format(available))
+    print("Percentage: {:.1f}%".format(percentage))
+    print("Address: {}".format(address))
 
 
 def option_10(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]], timestamp: str) -> None:
