@@ -10,7 +10,7 @@ from additional import main as additional_main
 from normal import main as normal_main
 from utils.input import validate_input_str
 
-title = """
+title = r"""
   _____  _____   _____   __                    _                                  _   
  |  __ \|  __ \ / ____| /_ |     /\           (_)                                | |  
  | |__) | |__) | |  __   | |    /  \   ___ ___ _  __ _ _ __  _ __ ___   ___ _ __ | |_ 
