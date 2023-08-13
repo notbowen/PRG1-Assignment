@@ -66,7 +66,7 @@ def option_2(carpark_info: List[Dict[str, str]], _: List[Dict[str, str]]) -> Non
         # Extract neccessary info
         num = basement["Carpark Number"]
         cp_type = basement["Carpark Type"]
-        addr = basement["Address"]
+        addr = basement["Address"].strip("\"")
 
         # Print out info
         print("{:10} {:20} {}".format(num, cp_type, addr))
@@ -186,7 +186,7 @@ def option_7(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
         total = cp["Total Lots"]
         available = cp["Lots Available"]
         percentage = cp["Percentage"]
-        address = cp["Address"]
+        address = cp["Address"].strip("\"")
 
         print("{:10} {:>10} {:>14} {:10.1f}   {}".format(
             num, total, available, percentage, address))
@@ -220,7 +220,7 @@ def option_8(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
         total = cp["Total Lots"]
         available = cp["Lots Available"]
         percentage = cp["Percentage"]
-        address = cp["Address"]
+        address = cp["Address"].strip("\"")
 
         print("{:10} {:>10} {:>14} {:10.1f}   {}".format(
             num, total, available, percentage, address))
@@ -251,6 +251,9 @@ def option_9(_: List[Dict[str, str]], all_cp_info: List[Dict[str, str]]) -> None
     # Display "No Address Found" if address is empty
     if address == "":
         address = "No Address Found"
+
+    # Remove quotations from address
+    address = address.strip("\"")
 
     # Display carpark information
     print("Carpark Number: {}".format(num))

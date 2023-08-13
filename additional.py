@@ -172,7 +172,7 @@ def draw_markers(map_widget: tk_map.TkinterMapView, data: List[Dict[str, str]]):
         display_text += "Total Lots: " + carpark["Total Lots"] + '\n'
         display_text += "Percentage: " + \
                         str(round(carpark["Percentage"], 2)) + "%\n"
-        display_text += "Address: " + carpark["Address"]
+        display_text += "Address: " + carpark["Address"].strip("\"")
 
         # Display marker
         map_widget.set_marker(
