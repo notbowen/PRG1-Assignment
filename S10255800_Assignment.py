@@ -2,7 +2,7 @@
 # Date: 1 Aug 2023
 # Last Modified: 2 Aug 2023
 #
-# basic.py
+# S10255800_Assignment.py
 # Implementation of the basic & advanced requirements in
 # Assignment of PRG1, 2023
 

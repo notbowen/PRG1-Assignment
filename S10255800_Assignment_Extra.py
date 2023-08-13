@@ -1,7 +1,7 @@
 # Name: Hu Bowen
 # Date: 3 Aug 2023
 #
-# additional.py
+# S10255800_Assignment_Extra.py
 # Implements additional requirements for PRG1 '23 Final Assignment
 # Interactive map with real time data
 
@@ -183,6 +183,10 @@ def draw_markers(map_widget: tk_map.TkinterMapView, data: List[Dict[str, str]]):
             data=display_text,
             command=marker_click
         )
+
+    # Alert user if no carparks were found
+    if len(data) == 0:
+        messagebox.showerror("Error!", "No Carparks Found!")
 
 
 def main():

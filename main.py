@@ -6,8 +6,8 @@
 # In charge of getting the user input to switch between normal and additional mode
 # Before running the respective scripts
 
-from additional import main as additional_main
-from normal import main as normal_main
+from S10255800_Assignment_Extra import main as additional_main
+from S10255800_Assignment import main as normal_main
 from utils.input import validate_input_str
 
 title = r"""
